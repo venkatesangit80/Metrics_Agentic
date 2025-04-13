@@ -1,57 +1,30 @@
+from inference_utils import generate_windows, detect_anomalies
 import pandas as pd
-import numpy as np
-import pickle
 from tensorflow.keras.models import load_model
-from sklearn.metrics import mean_squared_error
-from datetime import timedelta
 
-# === Step 1: Load Test Data ===
+# Load and preprocess
 df = pd.read_csv("../data/App3_Jan2023.csv")
 df['timestamp'] = pd.to_datetime(df['timestamp'])
-
-# === Step 2: Filter next 15 days ===
 cutoff = df['timestamp'].min() + pd.Timedelta(days=15)
-df_test = df[df['timestamp'] >= cutoff]
+df = df[df['timestamp'] >= cutoff]
 
 selected_metrics = ['Throughput', 'Response Time (ms)', 'Error Count', 'CLR_CPU_Usage (%)']
-df_test = df_test[df_test['metric_name'].isin(selected_metrics)]
+df = df[df['metric_name'].isin(selected_metrics)]
 
-# === Step 3: Pivot ===
-pivot_test = df_test.pivot_table(index='timestamp', columns='metric_name', values='metric_value', aggfunc='mean').dropna()
+pivot_df = df.pivot_table(index='timestamp', columns='metric_name', values='metric_value', aggfunc='mean').dropna()
 
-# === Step 4: Load Scaler ===
-with open("../models/lstm_scaler.pkl", "rb") as f:
-    scaler = pickle.load(f)
-
-X_scaled = scaler.transform(pivot_test)
-
-# === Step 5: Create Sliding Windows ===
-def create_sequences(data, window_size):
-    X = []
-    for i in range(len(data) - window_size):
-        seq = data[i:i + window_size]
-        X.append(seq)
-    return np.array(X)
-
-window_size = 30
-X_seq = create_sequences(X_scaled, window_size)
-
-# === Step 6: Load LSTM AutoEncoder ===
+# Run inference
+sequences, timestamps, raw_data = generate_windows(pivot_df, window_size=30)
 model = load_model("../models/lstm_autoencoder_model.h5", compile=False)
+results = detect_anomalies(
+    model=model,
+    sequences=sequences,
+    timestamps=timestamps,
+    raw_data=raw_data,
+    metric_names=pivot_df.columns.tolist(),
+    dynamic=True  # <- enable MAD-based thresholding
+)
 
-# === Step 7: Predict & Compute Reconstruction Error ===
-X_pred = model.predict(X_seq)
-errors = np.mean(np.square(X_seq - X_pred), axis=(1, 2))
-
-# === Step 8: Assign Errors Back to Timestamps ===
-timestamps = pivot_test.index[window_size:]
-df_result = pd.DataFrame({
-    "timestamp": timestamps,
-    "reconstruction_error": errors,
-    "anomaly": (errors > 0.01).astype(int)  # static threshold; can be tuned
-})
-
-# === Step 9: Save Results ===
-df_result.to_csv("../outputs/App3_inference_results.csv", index=False)
-
-print("✅ Inference completed. Results saved to outputs folder.")
+# Save
+results.to_csv("../outputs/App3_inference_results_with_values.csv", index=False)
+print("✅ Inference + metrics saved.")
