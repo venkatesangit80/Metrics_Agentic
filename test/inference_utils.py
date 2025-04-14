@@ -46,12 +46,20 @@ def detect_anomalies(model, sequences, timestamps, raw_data, metric_names, dynam
 
     # Explanation (top deviated metric in last timestep)
     explanations = []
+    explanations = []
+
     for i in range(len(sequences)):
-        actual = sequences[i][-1]
+        actual = sequences[i][-1]  # last timestep
         predicted = preds[i][-1]
         diffs = np.abs(actual - predicted)
-        top_metric = metric_names[np.argmax(diffs)]
-        explanations.append(f"High deviation in '{top_metric}'")
+        top_metric_idx = np.argmax(diffs)
+        top_metric = metric_names[top_metric_idx]
+
+        if errors[i] > threshold:
+            explanation = f"High deviation in '{top_metric}'"
+        else:
+            explanation = ""  # or use None
+        explanations.append(explanation)
 
     # Raw metric values at window end
     raw_df = pd.DataFrame(raw_data, columns=metric_names)
