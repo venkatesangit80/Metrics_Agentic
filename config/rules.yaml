@@ -1,0 +1,29 @@
+
+rules:
+  - id: SLA_001
+    description: "Response time must not exceed 200ms during business hours"
+    sla_type: "Response Time SLA"
+    period_type: "Business Hours"
+    condition: "row['Response Time (ms)'] > 200 and row['period_type'] == 'Business Hours'"
+    severity: "High"
+
+  - id: SLA_002
+    description: "Error count should remain below 2 at all times"
+    sla_type: "Error Rate SLA"
+    period_type: "All Periods"
+    condition: "row['Error Count'] > 2"
+    severity: "Medium"
+
+  - id: SLA_003
+    description: "Throughput should not drop below 80 during peak hours"
+    sla_type: "Usage SLA"
+    period_type: "Business Hours"
+    condition: "row['Throughput'] < 80 and row['period_type'] == 'Business Hours'"
+    severity: "Medium"
+
+  - id: SLA_004
+    description: "High CPU and high error count is a critical alert"
+    sla_type: "Performance Correlation"
+    period_type: "All Periods"
+    condition: "row.get('CLR_CPU_Usage (%)', 0) > 85 and row['Error Count'] > 1.5"
+    severity: "Critical"
