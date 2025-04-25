@@ -18,6 +18,15 @@ It describes a next-generation observability framework powered by **Agentic AI**
 
 ## 🧠 Objective
 
+The goal is to create a smart observability system that can:
+	•	Notice when something unusual is happening in your applications or infrastructure — without waiting for someone to report it
+	•	Anticipate potential problems before they impact users — like slowdowns or system strain
+	•	Figure out what’s causing the issue, so teams don’t waste time guessing
+	•	Take corrective actions automatically — like adjusting resources or restarting a failing component
+	•	Connect information from different sources, such as logs, metrics, and system events, to give a full picture of what’s going on
+	•	Notify the right people or systems, so nothing slips through the cracks
+	•	Double-check whether systems are performing the way they’re supposed to, and highlight any gaps
+
 To enable **self-reasoning, self-healing, and chat-driven** observability using a modular agent framework that can:
 
 - Detect and explain anomalies
