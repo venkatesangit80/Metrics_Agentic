@@ -1,3 +1,39 @@
+flowchart TD
+  A[LangChain Chatbot] --> B[Agent Router - FastAPI]
+  B --> C1[Anomaly Detection Agent]
+  B --> C2[Suspect Ranking Agent]
+  B --> C3[Future Prediction Agent]
+  B --> C4[Automation Agent (Scale Up/Down)]
+  B --> C5[Log Analysis Agent]
+  B --> C6[Alerting Agent]
+  B --> C7[Validation Agent]
+
+  C1 --> D[Metrics Data Sources]
+  C2 --> D
+  C3 --> D
+  C5 --> E[Log Data Sources]
+
+  D[Metrics Data Sources] -->|Fetch| F1[Prometheus]
+  D -->|Fetch| F2[AppDynamics]
+
+  E[Log Data Sources] -->|Fetch| F3[Splunk]
+  E -->|Fetch| F4[ElasticSearch]
+
+  C4 -->|Scale Actions| G[OpenShift / Kubernetes APIs]
+
+  C6 -->|Send Alerts| H1[Slack]
+  C6 -->|Send Alerts| H2[PagerDuty]
+  C6 -->|Send Alerts| H3[Opsgenie]
+
+  style A fill:#f9f,stroke:#333,stroke-width:2px
+  style B fill:#bbf,stroke:#333,stroke-width:2px
+  style D fill:#cfc,stroke:#333,stroke-width:2px
+  style E fill:#ccf,stroke:#333,stroke-width:2px
+  style G fill:#ffc,stroke:#333,stroke-width:2px
+  style H1 fill:#fc9,stroke:#333,stroke-width:1px
+  style H2 fill:#fc9,stroke:#333,stroke-width:1px
+  style H3 fill:#fc9,stroke:#333,stroke-width:1px
+
 
 # 🚀 Agentic AI Observability Framework – Business Architecture Overview
 
