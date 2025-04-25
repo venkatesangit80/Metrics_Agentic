@@ -1,0 +1,20 @@
+## label: Agentic AI Observability Architecture
+## style: shape=rectangle;whiteSpace=wrap;html=1;
+## namespace: csvimport-
+## width: auto
+## height: auto
+## padding: 20
+## layout: auto
+## level: auto
+## edges: auto
+
+ID,Label,Parent
+1,LangChain Chatbot,
+2,Agent Router (FastAPI),1
+3,Anomaly Detection Agent,2
+4,Suspect Ranking Agent,2
+5,Future Prediction Agent,2
+6,Automation Agent (OCP),2
+7,Log Analysis Agent,2
+8,Alerting Agent,2
+9,Validation Agent,2
